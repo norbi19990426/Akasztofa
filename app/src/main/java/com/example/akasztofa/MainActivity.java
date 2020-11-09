@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private char[] betuk = {'A','Á','B','C','D','E','É','F','G','H','I','Í','J','K','L','M','N','O','Ó','Ö','Ő','P','R','S','T','U','Ú','Ü','Ű','V','Z'};
     private char betu;
     private Random rng;
-    private int randomSzam, lepkedes, korok, korokFalse;
+    private int randomSzam, lepkedes, korokFalse;
     private String szo;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +68,26 @@ public class MainActivity extends AppCompatActivity {
         btn_tippel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                korok++;
+                Context context = getApplicationContext();
+                CharSequence text;
+                int duration = Toast.LENGTH_SHORT;
+
                 text_betuk.setText(betuCsere());
+
+                if(hibaKuld() == false){
+                    korokFalse++;
+                    text= "Helytelen betű!";
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
+                else{
+                    text= "Helyes betű!";
+                    Toast toast = Toast.makeText(context, text, duration);
+                    toast.show();
+                }
                 hiba(korokFalse);
 
-                if(korok > 13){
+                if(korokFalse == 13){
                     final AlertDialog.Builder builder  = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Nem sikerült kitalálni!");
                     builder.setMessage("Szeretnél még egyet játszani?");
@@ -91,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
-                else if(betuCsere() == szavak[randomSzam]){
+                else if(betuCsere().equals(szavak[randomSzam])){
                     final AlertDialog.Builder builder  = new AlertDialog.Builder(MainActivity.this);
                     builder.setTitle("Helyes megfejtés!");
                     builder.setMessage("Szeretnél még egyet játszani?");
@@ -125,25 +140,30 @@ public class MainActivity extends AppCompatActivity {
         text_betuk.setText(szo);
     }
     private String betuCsere(){
-        boolean dont = false;
         char[] tomb = szavak[randomSzam].toCharArray();
         char[] tombSzo = szo.toCharArray();
         for (int i = 0; i < tomb.length; i++){
-            if (tomb[i] == (betuk[lepkedes])) {
-                dont = true;
+            if (tomb[i] == betuk[lepkedes]) {
                 for (int j = 0; j < tombSzo.length; j++){
                     tombSzo[i] = betuk[lepkedes];
                 }
             }
-
-        }
-        if (dont == false){
-            korokFalse++;
         }
         szo = new String(tombSzo);
         return szo;
     }
+    private boolean hibaKuld(){
+        boolean dont = false;
+        char[] tomb = szavak[randomSzam].toCharArray();
+        for (int i = 0; i < tomb.length; i++){
+            if (tomb[i] == betuk[lepkedes]) {
+                dont = true;
+            }
+        }
+        return dont;
+    }
     private void hiba(int korokFalse){
+
         switch (korokFalse){
             case 1: akasztofaImg.setImageResource(R.drawable.akasztofa01);break;
             case 2: akasztofaImg.setImageResource(R.drawable.akasztofa02);break;
@@ -173,7 +193,6 @@ public class MainActivity extends AppCompatActivity {
         rng = new Random();
         lepkedes = 0;
         szo = "";
-        korok = 0;
         korokFalse = 0;
     }
 }
