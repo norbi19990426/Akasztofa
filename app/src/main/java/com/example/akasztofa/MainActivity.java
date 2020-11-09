@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.security.cert.CertificateParsingException;
+
 public class MainActivity extends AppCompatActivity {
 
     private ImageView akasztofaImg;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Random rng;
     private int randomSzam, lepkedes, korokFalse;
     private String szo;
+    private List<Character> voltBetu;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
                     lepkedes = 30;
                     text_tippeltBetu.setText(betuk[lepkedes]+"");
                 }
+                betuTiltas(betuDontes(betu));
+
             }
         });
         btn_elore.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                     lepkedes = 0;
                     text_tippeltBetu.setText(betuk[lepkedes]+"");
                 }
+                betuTiltas(betuDontes(betu));
 
             }
         });
@@ -71,8 +77,11 @@ public class MainActivity extends AppCompatActivity {
                 Context context = getApplicationContext();
                 CharSequence text;
                 int duration = Toast.LENGTH_SHORT;
+                betu = betuk[lepkedes];
 
                 text_betuk.setText(betuCsere());
+
+                betuTiltas(betuDontes(betu));
 
                 if(hibaKuld() == false){
                     korokFalse++;
@@ -85,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(context, text, duration);
                     toast.show();
                 }
+
                 hiba(korokFalse);
 
                 if(korokFalse == 13){
@@ -127,9 +137,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
+    private boolean betuDontes(char betu){
 
+        voltBetu.add(betu);
+        boolean dont = true;
+        for(Character c : voltBetu){
+            if (c.equals(betuk[lepkedes])){
+                dont = false;
+            }
+        }
+        return dont;
+    }
+    private void betuTiltas(boolean dont){
+        if(dont == false){
+            btn_tippel.setEnabled(false);
+            text_tippeltBetu.setTextColor(Color.parseColor("#000000"));
+        }
+        else{
+            btn_tippel.setEnabled(true);
+            text_tippeltBetu.setTextColor(Color.parseColor("#FF0000"));
+        }
+    }
     private void szoHosszMegjelenites() {
 
             for(int i = 0; i < szavak[randomSzam].length(); i++){
@@ -194,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
         lepkedes = 0;
         szo = "";
         korokFalse = 0;
+        voltBetu = new ArrayList<>();
     }
 }
 
